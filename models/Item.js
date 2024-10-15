@@ -2,6 +2,10 @@ const mongoose = require("mongoose");
 
 const ItemSchema = new mongoose.Schema(
   {
+    itemId: {
+      type: mongoose.Schema.Types.ObjectId, // this is the id of the item in the item collection
+      required: true,
+    },
     name: {
       type: String,
       required: [true, "Please provide company name"],
