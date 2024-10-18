@@ -7,7 +7,7 @@ import {
   setToken,
 } from "./index.js";
 import { showLoginRegister } from "./loginRegister.js";
-import { showJobs } from "./jobs.js";
+import { showItems } from "./items.js";
 
 let loginDiv = null;
 let email = null;
@@ -45,7 +45,7 @@ export const handleLogin = () => {
             email.value = "";
             password.value = "";
 
-            showJobs();
+            showItems();
           } else {
             message.textContent = data.msg;
           }
@@ -64,7 +64,7 @@ export const handleLogin = () => {
 
         message.textContent = "You have been logged off.";
 
-        jobsTable.replaceChildren([jobsTableHeader]);
+        itemsTable.replaceChildren([itemsTableHeader]);
 
         showLoginRegister();
       }

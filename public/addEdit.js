@@ -1,31 +1,35 @@
 import { enableInput, inputEnabled, message, setDiv, token } from "./index.js";
-import { showJobs } from "./jobs.js";
+import { showItems } from "./items.js";
 
 let addEditDiv = null;
-let company = null;
-let position = null;
+let itemname = null;
+let description = null;
+let price = null;
+let quantity = null;
 let status = null;
-let addingJob = null;
+let addingItem = null;
 
 export const handleAddEdit = () => {
-  addEditDiv = document.getElementById("edit-job");
-  company = document.getElementById("company");
-  position = document.getElementById("position");
+  addEditDiv = document.getElementById("edit-item");
+  itemname = document.getElementById("itemname");
+  description = document.getElementById("description");
+  price = document.getElementById("price");
+  quantity = document.getElementById("quantity");
   status = document.getElementById("status");
-  addingJob = document.getElementById("adding-job");
+  addingItem = document.getElementById("adding-item");
   const editCancel = document.getElementById("edit-cancel");
 
   addEditDiv.addEventListener("click", async (e) => {
     if (inputEnabled && e.target.nodeName === "BUTTON") {
-      if (e.target === addingJob) {
+      if (e.target === addingItem) {
         enableInput(false);
 
         let method = "POST";
-        let url = "/api/v1/jobs";
+        let url = "/api/v1/items";
 
-        if (addingJob.textContent === "update") {
+        if (addingItem.textContent === "update") {
           method = "PATCH";
-          url = `/api/v1/jobs/${addEditDiv.dataset.id}`;
+          url = `/api/v1/items/${addEditDiv.dataset.id}`;
         }
 
         try {
@@ -36,8 +40,10 @@ export const handleAddEdit = () => {
               Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify({
-              company: company.value,
-              position: position.value,
+              itemname: itemname.value,
+              description: description.value,
+              price: price.value,
+              quantity: quantity.value,
               status: status.value,
             }),
           });
@@ -46,38 +52,38 @@ export const handleAddEdit = () => {
           if (response.status === 200 || response.status === 201) {
             if (response.status === 200) {
               // a 200 is expected for a successful update
-              message.textContent = "The job entry was updated.";
+              message.textContent = "The item entry was updated.";
             } else {
               // a 201 is expected for a successful create
-              message.textContent = "The job entry was created.";
+              message.textContent = "The item entry was created.";
             }
 
-            company.value = "";
-            position.value = "";
-            status.value = "pending";
-            showJobs();
+            itemname.value = "";
+            description.value = "";
+            status.value = "in-stock";
+            showItems();
           } else {
             message.textContent = data.msg;
           }
         } catch (err) {
           console.log(err);
-          message.textContent = "A communication error occurred.";
+          message.textContent = "addEdit: A communication error occurred.";
         }
         enableInput(true);
       } else if (e.target === editCancel) {
         message.textContent = "";
-        showJobs();
+        showItems();
       }
     }
   });
 };
 
-export const showAddEdit = async (jobId) => {
-  if (!jobId) {
-    company.value = "";
-    position.value = "";
-    status.value = "pending";
-    addingJob.textContent = "add";
+export const showAddEdit = async (itemId) => {
+  if (!itemId) {
+    itemname.value = "";
+    description.value = "";
+    status.value = "in-stock";
+    addingItem.textContent = "add";
     message.textContent = "";
 
     setDiv(addEditDiv);
@@ -85,7 +91,7 @@ export const showAddEdit = async (jobId) => {
     enableInput(false);
 
     try {
-      const response = await fetch(`/api/v1/jobs/${jobId}`, {
+      const response = await fetch(`/api/v1/items/${itemId}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -95,23 +101,23 @@ export const showAddEdit = async (jobId) => {
 
       const data = await response.json();
       if (response.status === 200) {
-        company.value = data.job.company;
-        position.value = data.job.position;
-        status.value = data.job.status;
-        addingJob.textContent = "update";
+        itemname.value = data.item.itemname;
+        description.value = data.item.description;
+        status.value = data.item.status;
+        addingItem.textContent = "update";
         message.textContent = "";
-        addEditDiv.dataset.id = jobId;
+        addEditDiv.dataset.id = itemId;
 
         setDiv(addEditDiv);
       } else {
         // might happen if the list has been updated since last display
-        message.textContent = "The jobs entry was not found";
-        showJobs();
+        message.textContent = "The items entry was not found";
+        showItems();
       }
     } catch (err) {
       console.log(err);
       message.textContent = "A communications error has occurred.";
-      showJobs();
+      showItems();
     }
 
     enableInput(true);

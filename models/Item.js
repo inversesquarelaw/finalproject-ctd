@@ -2,13 +2,9 @@ const mongoose = require("mongoose");
 
 const ItemSchema = new mongoose.Schema(
   {
-    itemId: {
-      type: mongoose.Schema.Types.ObjectId, // this is the id of the item in the item collection
-      required: true,
-    },
-    name: {
+    itemname: {
       type: String,
-      required: [true, "Please provide company name"],
+      required: [true, "Please provide item name"],
       maxlength: 50,
     },
     description: {
@@ -24,7 +20,7 @@ const ItemSchema = new mongoose.Schema(
     quantity: {
       type: Number,
       required: [true, "Please provide item quantity"],
-      default: 0, //can't have negative quantity
+      min: 0, //can't have negative quantity
     },
     status: {
       type: "String",
@@ -44,4 +40,4 @@ const ItemSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Job", JobSchema);
+module.exports = mongoose.model("Item", ItemSchema);
